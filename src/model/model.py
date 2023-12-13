@@ -90,7 +90,7 @@ print("Делаем график координаты...", end="")
 make_plot(121, None, None, None)
 make_plot(122, 90, -90, 0)
 
-plt.savefig(f'artifacts/coordinates_graph.png')
+plt.savefig(f'../../artifacts/coordinates_graph.png')
 plt.show()
 print("Готово")
 
@@ -105,6 +105,6 @@ plt.title("Скорость аппарата")
 plt.ylabel("Скорость, км/с")
 plt.xlabel("Время относительно T0, мин")
 
-plt.savefig('artifacts/speed_graph.png', bbox_inches='tight')
+plt.savefig('../../artifacts/speed_graph.png', bbox_inches='tight')
 plt.show()
 print("Готово")
