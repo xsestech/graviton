@@ -9,6 +9,7 @@ from config import Settings
 settings = Settings()
 fig = plt.figure(dpi=100)
 
+
 def dr_dt(t, y):
     """
     Решение дифференциального уравнения второго прядка для нахождения скорости и координаты аппарата.
@@ -24,10 +25,11 @@ def dr_dt(t, y):
     return dy
 
 
-def make_plot(position, elev, azim, roll):
+def make_plot(y, position, elev, azim, roll):
     """
     Ввыод подграфика скорости с настройками камеры
 
+    :param y: Координата
     :param position: позиция подграфика
     :param elev: высота камеры
     :param azim: азимут камеры
@@ -39,7 +41,7 @@ def make_plot(position, elev, azim, roll):
     ax.view_init(elev=elev, azim=azim, roll=roll)
 
     # Настройка масштаба
-    axis_max = settings.VENUS_R * 1.3
+    axis_max = settings.VENUS_R / 1000 * 1.3
     ax.axes.set_xlim3d(left=-axis_max, right=axis_max)
     ax.axes.set_ylim3d(bottom=-axis_max, top=axis_max)
     ax.axes.set_zlim3d(bottom=-axis_max, top=axis_max)
@@ -51,8 +53,8 @@ def make_plot(position, elev, azim, roll):
     planet_y = settings.VENUS_R * np.outer(np.sin(u), np.sin(v))
     planet_z = settings.VENUS_R * np.outer(np.ones(np.size(u)), np.cos(v))
 
-    ax.plot(y[0], y[1], y[2], label='Орбита', zorder=10)
-    ax.plot_surface(planet_x, planet_y, planet_z, zorder=1)
+    ax.plot(y[0] / 1000, y[1] / 1000, y[2] / 1000, label='Орбита', zorder=10)
+    ax.plot_surface(planet_x / 1000, planet_y / 1000, planet_z / 1000, zorder=1)
 
     ax.set_aspect('equal')
 
@@ -87,8 +89,8 @@ print("Готово")
 # Выведем графики
 print("Делаем график координаты...", end="")
 
-make_plot(121, None, None, None)
-make_plot(122, 90, -90, 0)
+make_plot(y, 121, None, None, None)
+make_plot(y, 122, 90, -90, 0)
 
 plt.savefig(f'../../artifacts/coordinates_graph.png')
 plt.show()
