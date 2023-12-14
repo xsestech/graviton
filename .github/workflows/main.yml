@@ -1,0 +1,17 @@
+name: Build LaTeX document
+on: [push]
+jobs:
+  build_latex:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Git repository
+        uses: actions/checkout@v2
+      - name: Compile LaTeX document
+        uses: dante-ev/latex-action@latest
+        with:
+          working_directory: docs
+          root_file: main.tex
+      - uses: actions/upload-artifact@v3
+        with:
+          name: physics-report
+          path: docs/main.pdf
