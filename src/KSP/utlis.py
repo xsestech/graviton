@@ -23,7 +23,7 @@ def load_data(filename: str) -> np.ndarray:
 
 
 def calc_std_percent(a: List[float]) -> float:
-    """Расчет дисперсии в процентах от среднего"""
+    """Расчет стандартного отклонения в процентах от среднего"""
     a = np.array(a)
     return np.std(a) / np.mean(a) * 100
 
