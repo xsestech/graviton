@@ -1,26 +1,29 @@
 \documentclass{article}
 \usepackage{graphicx} % Required for inserting images
 \usepackage[utf8]{inputenc}
+\usepackage[T2A]{fontenc}
 \usepackage{xcolor}
 \usepackage{minted}
 \usepackage{hyperref}
 \usepackage{amsmath}
-\usepackage[english,bulgarian,ukrainian,russian]{babel}
+\usepackage[english, russian]{babel}
 \usepackage[a4paper,top=2cm,bottom=2cm,left=3cm,right=3cm,marginparwidth=1.75cm]{geometry}
 \usepackage{textcomp}
 \usepackage{subcaption}
 \usepackage{biblatex}
+\usepackage{csquotes}
 \addbibresource{refs.bib}
+
 
 \title{Физико-математическая модель проекта и ее программная реализация}
 \author{Попов Алексей Вадимович}
 \author{Попов Алексей Вадимович}
-\date{10 Декабря 2023}
+\date{22 Декабря 2023}
 
 \begin{document}
     \maketitle
     \section{Введение}
-    В данном документе описаны все основные моменты, связанные с физической моделью в проекте команды <<Gratiton>>. Мы будем рассчитывать скорость аппарата около Венеры. В качестве начального состояния мы возьмем из \href{https://pds-atmospheres.nmsu.edu/data_and_services/atmospheres_data/Cassini_PDS3/mission-cat_3-26-13}{файла-описания полета аппарата <<Кассини-Гюйгенс>>} момент, когда при первом приближении к Венере расстояние до планеты было 248 км и скорость в этот момент - 11.8 км/с. Мы берем именно это состояние, потому что в этот момент аппарат находился на минимальном расстоянии до Венеры, то есть в перигее орбиты и потому что только в этот момент авторы описания дают скорость аппарата. Далее мы будем обозначать данный момент за T0.
+    В данном документе описаны все основные моменты, связанные с физической моделью в проекте команды <<Graviton>>. Мы будем рассчитывать скорость аппарата около Венеры. В качестве начального состояния мы возьмем из \href{https://pds-atmospheres.nmsu.edu/data_and_services/atmospheres_data/Cassini_PDS3/mission-cat_3-26-13}{файла-описания полета аппарата <<Кассини-Гюйгенс>>} момент, когда при первом приближении к Венере расстояние до планеты было 248 км и скорость в этот момент - 11.8 км/с. Мы берем именно это состояние, потому что в этот момент аппарат находился на минимальном расстоянии до Венеры, то есть в перигее орбиты и потому что только в этот момент авторы описания дают скорость аппарата. Далее мы будем обозначать данный момент за T0.
     \section{Физическая модель}
     \subsection{Допущения}
     \begin{enumerate}
@@ -90,7 +93,8 @@
     \begin{minted}{python}
     def dr_dt(t, y):
         """
-        Решение дифференциального уравнения второго прядка для нахождения скорости и координаты аппарата.
+        Решение дифференциального уравнения второго прядка для нахождения скорости 
+        и координаты аппарата.
         :param y: y[:3] - позиция, y[3:] - скорость
         :param t: время
         :return: 
@@ -146,7 +150,6 @@
     \begin{subfigure}{0.5\textwidth}
         \includegraphics[width=1\linewidth]{images/eve_coordinates.png}
         \caption{Ева}
-        \label{fig:enter-label}
     \end{subfigure}
     \caption{Графики координат}
     \end{figure}
@@ -164,14 +167,14 @@
         plt.show()
     \end{minted}
     \begin{figure}[H]
-    \begin{subfigure}{0.5\textwidth}
-        \includegraphics[width=1\linewidth]{images/speed_graph.png}
-        \caption{Реальные параметры}
-    \end{subfigure}
-    \begin{subfigure}{0.5\textwidth}
-        \includegraphics[width=1\linewidth]{images/eve_speed.png}
-        \caption{Ева}
-    \end{subfigure}
+        \begin{subfigure}{0.5\textwidth}
+            \includegraphics[width=1\linewidth]{images/speed_graph.png}
+            \caption{Реальные параметры}
+        \end{subfigure}
+        \begin{subfigure}{0.5\textwidth}
+            \includegraphics[width=1\linewidth]{images/eve_speed.png}
+            \caption{Ева}
+        \end{subfigure}
     \caption{Графики скорости}
     Также сохраним результаты на будущее:
     \begin{minted}{python}
@@ -184,14 +187,7 @@
     \end{figure}
     \subsection{KSP}
     \subsubsection{Снятие данных}
-    Для того, чтобы приблизить условия в KSP к реальным, мы решили задать орбиту вручную через cheat menu(alt-f12):
-     \begin{figure}[H]
-         \centering
-         \includegraphics[width=0.5\linewidth]{images/orbit_params.png}
-         \caption{Паметры орбиты}
-         \label{fig:enter-label}
-     \end{figure}
-     После чего с помощью библиотеки krpc мы автоматически выполняем маневр для увеличения перигея орбиты до 248 км. Дальше мы включем ускорение времени 10x и начинаем снимать данные о скорости и координате до завершения программы. При остановке массивы с данными сохраняются с помощью библиотеки joblib:
+     C помощью библиотеки krpc мы подключаемся к KSP. Дальше мы включаем ускорение времени 10x и начинаем снимать данные о скорости и координате до завершения программы. При остановке массивы с данными сохраняются с помощью библиотеки joblib:
      \begin{minted}{python}
     import os
     import time
@@ -253,7 +249,8 @@
         exit(0)
 
      \end{minted}
-     \subsubsection{Анализ данных}
+     \section{Анализ и выводы}
+     \subsection{Анализ данных с KSP}
      Для того, чтобы вывести график скорости нужно полученные данные предварительно обработать. Сначала загрузим массивы с помощью joblib:
      \begin{minted}{python}
      velocities = np.array(joblib.load(os.path.join(DATA_PATH, "velocities.joblib")))
@@ -278,10 +275,9 @@
      \end{minted}
      \begin{figure}[H]
          \centering
-         \includegraphics[width=0.5\linewidth]{images/ksp_speed.png}
+         \includegraphics[width=0.75\linewidth]{images/ksp_speed.png}
          \caption{Скорость в KSP}
      \end{figure}
-    \section{Сравнение результатов и выводы}
     Для сравнения модели и KSP загрузим сохраненные результаты:
     \begin{minted}{python}
     math_v = joblib.load(os.path.join(DATA_PATH, "math_v.joblib"))
@@ -289,7 +285,7 @@
     \end{minted}
     Выведем сравнительный график:
     \begin{minted}{python}
-        plt.plot(times[index_in_time_range], velocities[index_in_time_range], 'r', label='KSP')
+    plt.plot(times[index_in_time_range], velocities[index_in_time_range], 'r', label='KSP')
     plt.plot(math_t, math_v, 'g', label='Модель')
     plt.title("Сравнение модели и KSP")
     plt.ylabel("Скорость, км/с")
@@ -297,13 +293,89 @@
     plt.legend(loc='best')
     plt.show()
     \end{minted}
-    \begin{figure}
+    \begin{figure}[H]
         \centering
-        \includegraphics[width=0.75\linewidth]{images/compare_math_ksp_speed.png}
+        \includegraphics[width=0.75\linewidth]{images/compare_ksp_math.png}
         \caption{Сравнительный график}
         \label{fig:compare}
     \end{figure}
-    По рис. \ref{fig:compare} видно, что модель очень близко повторяет график скорости в KSP, из чего можно сделать вывод, что мы смогли построить достаточно точную модель.
+    
+    \subsection{Анализ выполнения второго закона Кеплера}
+    Второй закон Кеплера гласит, что за равные промежутки времени радиус-вектор, соединяющий объект, находящийся на орбите, и планету, вокруг которой он движется, описывает собой равные площади. Поэтому для проверки выполнимости данного закона на наших данных, мы будем делить данные на равные по времени части(далее семлы):
+    \begin{minted}{python}
+    total_time = t[-1] - t[0]
+    t = t + abs(np.min(t))
+    one_sample_integration_period = (total_time) / n_splits
+    n_integrated = 0
+    ...
+    while n_integrated < n_splits:
+        # Обрежем один семпл
+        sample_end = sample_start + find_closest_index(t[sample_start:], one_sample_integration_period)
+        sample_time = t[sample_start:sample_end + 1]
+        sample_cords = r[sample_start:sample_end + 1]
+        t -= t[sample_end]  # Сдвинем 0 в начало семпла
+        n_integrated += 1
+    \end{minted}
+    \begin{figure}[H]
+        \begin{subfigure}{0.5\textwidth}
+            \includegraphics[width=1\linewidth]{images/model_split.png}
+            \caption{Модель}
+        \end{subfigure}
+        \begin{subfigure}{0.5\textwidth}
+            \includegraphics[width=1\linewidth]{images/ksp_split.png}
+            \caption{KSP}
+        \end{subfigure}
+    \caption{Разделение траектории}
+    \end{figure}
+    Т.к. мы работаем с числами с плавающей точкой, то мы не сможем точно взять сумму, поэтому мы будем брать ближайшее к нужному, в каждом семпле, время:
+    \begin{minted}{python}
+def find_closest_index(array: np.array, target: float) -> int:
+    """
+    Найти индекс ближайшего число, к заданному в массиве numpy
+    :param array: массив numpy
+    :param target: число, которое ищем
+    :return: индекс ближайшего числа
+    """
+    absolute_diff = np.abs(array - target)
+    closest_index = np.argmin(absolute_diff)
+    return closest_index
+    \end{minted}
+    
+    Для того, чтобы найти площади между радиус-векторами, нам нужно найти определенный интеграл от функции \[ \int_{t_i}^{t_{i+1}} \mathbf{r}(t) \,dx \] где $\Delta{t}_i=t_{i+1}-t_{i}=\Delta{t}_{i+1}=one\_sample\_integration\_period$ \\
+    Было решено учесть геометрию задачи и вычислить интеграл с помощью суммы векторных произведений между соседними векторами: 
+    \[a_i = \sum_{j=k}^{l-1} \frac{1}{2}|\mathbf{r}_{k} \times \mathbf{r}_{k + 1}| \] где $a_i$ - элемент массива с площадями, k - начало текущего семпла, l - конец семпла.
+    В коде это реализуется так:
+    \begin{minted}{python}
+area = 0.5 * np.sum(np.linalg.norm(np.cross(sample_cords[:-1], sample_cords[1:]),
+                    axis=1))
+areas.append(area)
+    \end{minted}
+    Теперь нужно как-то оценить, насколько хорошо выполняется второй закон Кеплера. Для это была взято стандартное отклонение в массиве с площадями, поделенное на среднее и умноженное на 100:
+    \begin{minted}{python}
+def calc_std_percent(a: List[float]) -> float:
+    """Расчет стандартного отклонения в процентах от среднего"""
+    a = np.array(a)
+    return np.std(a) / np.mean(a) * 100
+    \end{minted}
+    В итоге получились такие результаты
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.5\linewidth]{images/result.png}
+        \caption{Итоговые разбросы}
+        \label{fig:reslut}
+    \end{figure}
+    \begin{figure}[H]
+        \begin{subfigure}{0.5\textwidth}
+            \includegraphics[width=1\linewidth]{images/model_bins.png}
+        \end{subfigure}
+        \begin{subfigure}{0.5\textwidth}
+           \includegraphics[width=1\linewidth]{images/ksp_bins.png}
+        \end{subfigure}
+        \label{fig:areas}
+        \caption{Площади}
+    \end{figure}
+    \section{Выводы}
+    Как мы можем видеть по рис. \ref{fig:compare} и рис. \ref{fig:reslut} различия в модели и KSP есть. Как невыполнение второго закона Кеплера в KSP, так и расхождение графиков скорости объясняется тем, что модель не учитывает силы гравитации между солнцем и аппаратом. Также в случае с законом Кеплера можно добавить, что в результате воздействия солнца на аппарат кривая орбиты изменяется и у нас получается не коническое сечение. 
     \newpage
     \nocite{*}
     \printbibliography
