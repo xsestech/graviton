@@ -45,7 +45,7 @@ times1 = np.squeeze(times[index_in_time_range])
 
 # Проверим второй закон кеплера
 # KSP
-print("Дисперсия в KSP:")
+print("Разброс в KSP:")
 plt.title("KSP")
 ares_tri_ksp, time_err_ksp, sample_error_ksp = triangle_integrate(cords1, times1, 10)
 plt.title("KSP")
@@ -53,7 +53,7 @@ plt.bar(np.arange(settings.N_SPLITS), ares_tri_ksp, color='r')
 plt.show()
 
 # Модель
-print("Дисперсия в модели:")
+print("Разброс в модели:")
 plt.title("Модель")
 ares_tri_math, time_err_math, sample_error_math = triangle_integrate(math_y.T[:, 0:3], math_t, settings.N_SPLITS)
 plt.title("Модель")
